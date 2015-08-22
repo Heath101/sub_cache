@@ -52,6 +52,14 @@ describe SubCache do
     end
   end
 
+  describe :clear do
+    it 'clears the cache' do
+      subject.__setobj__({'my_key' => 'my_val'})
+      subject.clear
+      expect(subject.read('my_key')).to eq nil
+    end
+  end
+
   describe :__getobj__ do
     it 'is defined' do
       expect{subject.__getobj__}.not_to raise_error
