@@ -5,6 +5,7 @@ class SubCache < Delegator
 
   def initialize(parent_key, parent_cache)
     @cache = {}
+    @serializer = Marshal
     @parent_key = parent_key
     @parent_cache = parent_cache
   end
@@ -15,6 +16,7 @@ class SubCache < Delegator
 
   def write(key, value)
     @cache.store(key.to_s, value)
+    parent_cache.write(parent_key, @serializer.dump(@cache))
   end
 
   def __getobj__

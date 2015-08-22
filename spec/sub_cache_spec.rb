@@ -1,7 +1,8 @@
 require_relative '../sub_cache'
 
 describe SubCache do
-  subject { SubCache.new('ID123', double) }
+  subject { SubCache.new('ID123', parent) }
+  let(:parent) { double(write: nil)}
 
   describe :new do
 
@@ -41,6 +42,13 @@ describe SubCache do
     it 'converts symbol keys to strings' do
       subject.write(:my_key, 'my_value')
       expect(subject.__getobj__['my_key']).to eq 'my_value'
+    end
+
+    it 'updates parent cache with serialized version of cache' do
+      parent = double
+      cache = SubCache.new('123',parent)
+      expect(parent).to receive(:write).with('123', "\x04\b{\x06I\"\vmy_key\x06:\x06EFI\"\rmy_value\x06;\x00F")
+      cache.write('my_key','my_value')
     end
   end
 
