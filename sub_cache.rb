@@ -1,12 +1,11 @@
 require 'delegate'
 
 class SubCache < Delegator
-  attr_reader :parent_key, :parent_cache
+  attr_reader :cache_id, :parent_cache
 
-  def initialize(parent_key, parent_cache)
+  def initialize(cache_id, parent_cache)
     @cache = {}
-    @serializer = Marshal
-    @parent_key = parent_key
+    @cache_id = cache_id
     @parent_cache = parent_cache
   end
 
@@ -16,12 +15,12 @@ class SubCache < Delegator
 
   def write(key, value)
     @cache.store(key.to_s, value)
-    parent_cache.write(parent_key, @serializer.dump(@cache))
+    parent_cache.persist(cache_id, @cache)
   end
 
   def clear
     super
-    parent_cache.clear(parent_key)
+    parent_cache.clear(cache_id)
   end
 
   def __getobj__

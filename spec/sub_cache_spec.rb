@@ -2,12 +2,12 @@ require_relative '../sub_cache'
 
 describe SubCache do
   subject { SubCache.new('ID123', parent) }
-  let(:parent) { double(write: nil, clear: nil)}
+  let(:parent) { double(persist: nil, clear: nil)}
 
   describe :new do
 
-    it 'sets the parent_key attribute' do
-      expect(subject.parent_key).to eq 'ID123'
+    it 'sets the cache_id attribute' do
+      expect(subject.cache_id).to eq 'ID123'
     end
 
     it 'sets the parent_cache attribute' do
@@ -44,10 +44,10 @@ describe SubCache do
       expect(subject.__getobj__['my_key']).to eq 'my_value'
     end
 
-    it 'updates parent cache with serialized version of cache' do
+    it 'sends message to parent cache to save' do
       parent = double
       cache = SubCache.new('123',parent)
-      expect(parent).to receive(:write).with('123', "\x04\b{\x06I\"\vmy_key\x06:\x06EFI\"\rmy_value\x06;\x00F")
+      expect(parent).to receive(:persist).with('123', cache.__getobj__)
       cache.write('my_key','my_value')
     end
   end
