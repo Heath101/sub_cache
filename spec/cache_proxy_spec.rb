@@ -1,0 +1,4 @@
+
+describe CacheMaster do
+
+end

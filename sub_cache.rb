@@ -1,33 +1,43 @@
 require 'delegate'
 
 class SubCache < Delegator
-  attr_reader :cache_id, :parent_cache
+  attr_reader :cache_id
 
-  def initialize(cache_id, parent_cache)
-    @cache = {}
+  def initialize(cache_id, parent)
     @cache_id = cache_id
-    @parent_cache = parent_cache
+    @parent = parent
+  end
+
+  def store
+    @store ||= {}
+  end
+
+  def store=(cache_store)
+    @store = cache_store
   end
 
   def read(key)
-    @cache.fetch(key.to_s, nil)
+    store.fetch(key.to_s, nil)
   end
 
   def write(key, value)
-    @cache.store(key.to_s, value)
-    parent_cache.persist(cache_id, @cache)
+    store.store(key.to_s, value)
+    parent.write(cache_id, store)
   end
 
   def clear
     super
-    parent_cache.clear(cache_id)
+    parent.clear(cache_id)
   end
 
   def __getobj__
-    @cache
+    store
   end 
 
   def __setobj__(obj)
-    @cache = obj
   end
+
+private
+  attr_reader :parent
+
 end
