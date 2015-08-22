@@ -19,6 +19,11 @@ class SubCache < Delegator
     parent_cache.write(parent_key, @serializer.dump(@cache))
   end
 
+  def clear
+    super
+    parent_cache.clear(parent_key)
+  end
+
   def __getobj__
     @cache
   end 

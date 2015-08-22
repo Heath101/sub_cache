@@ -2,7 +2,7 @@ require_relative '../sub_cache'
 
 describe SubCache do
   subject { SubCache.new('ID123', parent) }
-  let(:parent) { double(write: nil)}
+  let(:parent) { double(write: nil, clear: nil)}
 
   describe :new do
 
@@ -57,6 +57,12 @@ describe SubCache do
       subject.__setobj__({'my_key' => 'my_val'})
       subject.clear
       expect(subject.read('my_key')).to eq nil
+    end
+
+    it 'removes itself from the parent cache' do
+      subject.__setobj__({'my_key' => 'my_val'})
+      expect(parent).to receive(:clear).with('ID123')
+      subject.clear
     end
   end
 
