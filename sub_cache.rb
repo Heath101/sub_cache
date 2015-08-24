@@ -1,15 +1,12 @@
 require 'delegate'
 
 class SubCache < Delegator
-  attr_reader :cache_id
+  attr_reader :cache_id, :store
 
-  def initialize(cache_id, parent)
+  def initialize(cache_id, parent, store=nil)
     @cache_id = cache_id
     @parent = parent
-  end
-
-  def store
-    @store ||= {}
+    @store = store || HashStore.new
   end
 
   def store=(cache_store)
@@ -17,11 +14,11 @@ class SubCache < Delegator
   end
 
   def read(key)
-    store.fetch(key.to_s, nil)
+    store.read(key)
   end
 
   def write(key, value)
-    store.store(key.to_s, value)
+    store.write(key.to_s, value)
     parent.write(cache_id, store)
   end
 
